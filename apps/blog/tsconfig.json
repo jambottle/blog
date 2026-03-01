@@ -15,6 +15,10 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "incremental": true,
+    "paths": {
+      "@/*": ["./*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"]
+    },
     "plugins": [
       {
         "name": "next"
