@@ -17,8 +17,6 @@
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.17.1",
-    "@vercel/analytics": "^1.1.3",
-    "@vercel/speed-insights": "^1.0.9",
     "@workspace/ui": "workspace:*",
     "geist": "1.7.0",
     "lucide-react": "^0.563.0",
