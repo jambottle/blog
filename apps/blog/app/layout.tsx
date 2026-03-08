@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { baseUrl } from "@/app/sitemap";
 import Footer from "@/components/footer";
 import Navbar from "@/components/nav";
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -45,18 +46,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        "bg-white text-black dark:bg-black dark:text-white",
-        GeistSans.variable,
-        GeistMono.variable,
-      )}
+      suppressHydrationWarning
+      className={cn(GeistSans.variable, GeistMono.variable)}
     >
       <body className="mx-4 mt-8 max-w-xl antialiased lg:mx-auto">
-        <main className="mt-6 flex min-w-0 flex-auto flex-col px-2 md:px-0">
-          <Navbar />
-          {children}
-          <Footer />
-        </main>
+        <Providers>
+          <main className="mt-6 flex min-w-0 flex-auto flex-col px-2 md:px-0">
+            <Navbar />
+            {children}
+            <Footer />
+          </main>
+        </Providers>
       </body>
     </html>
   );

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import ThemeToggle from "@/components/theme-toggle";
+
 const navItems = {
   "/": {
     name: "home",
@@ -12,7 +14,7 @@ const navItems = {
 export default function Navbar() {
   return (
     <aside className="mb-16 -ml-[8px] tracking-tight">
-      <div className="lg:sticky lg:top-20">
+      <div className="flex flex-row items-center justify-between lg:sticky lg:top-20">
         <nav
           className="fade relative flex scroll-pr-6 flex-row items-start px-0 pb-0 md:relative md:overflow-auto"
           id="nav"
@@ -31,6 +33,7 @@ export default function Navbar() {
             })}
           </div>
         </nav>
+        <ThemeToggle />
       </div>
     </aside>
   );
