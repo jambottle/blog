@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { baseUrl } from "@/app/sitemap";
 import { CustomMDX } from "@/components/mdx";
+import { ViewCounter } from "@/components/view-counter";
 import { formatDate, getBlogPostBySlug, getBlogPosts } from "@/lib/utils";
 
 export async function generateStaticParams() {
@@ -92,6 +93,9 @@ export default async function Blog({ params }) {
       <div className="mt-2 mb-8 flex items-center justify-between text-sm">
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatDate(post.metadata.publishedAt)}
+        </p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <ViewCounter slug={slug} />
         </p>
       </div>
       <article className="prose">
