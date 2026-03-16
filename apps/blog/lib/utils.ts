@@ -14,12 +14,22 @@ export function getBlogPostBySlug(slug: string): Post | undefined {
 }
 
 export function formatDate(date: string, includeRelative = false) {
-  const currentDate = new Date();
   if (!date.includes("T")) {
     date = `${date}T00:00:00`;
   }
-  const targetDate = new Date(date);
 
+  const targetDate = new Date(date);
+  const fullDate = targetDate.toLocaleString("en-us", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  if (!includeRelative) {
+    return fullDate;
+  }
+
+  const currentDate = new Date();
   const yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
   const monthsAgo = currentDate.getMonth() - targetDate.getMonth();
   const daysAgo = currentDate.getDate() - targetDate.getDate();
@@ -34,16 +44,6 @@ export function formatDate(date: string, includeRelative = false) {
     formattedDate = `${daysAgo}d ago`;
   } else {
     formattedDate = "Today";
-  }
-
-  const fullDate = targetDate.toLocaleString("en-us", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  if (!includeRelative) {
-    return fullDate;
   }
 
   return `${fullDate} (${formattedDate})`;

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { baseUrl } from "@/app/sitemap";
 import { CustomMDX } from "@/components/mdx";
@@ -94,9 +95,11 @@ export default async function Blog({ params }) {
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           {formatDate(post.metadata.publishedAt)}
         </p>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          <ViewCounter slug={slug} />
-        </p>
+        <Suspense>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <ViewCounter slug={slug} />
+          </p>
+        </Suspense>
       </div>
       <article className="prose">
         <CustomMDX source={post.content} />
