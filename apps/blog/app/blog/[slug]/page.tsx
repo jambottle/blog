@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { baseUrl } from "@/app/sitemap";
-import { CustomMDX } from "@/components/mdx";
 import { ViewCounter } from "@/components/view-counter";
 import { formatDate, getBlogPostBySlug, getBlogPosts } from "@/lib/utils";
 
@@ -101,9 +100,10 @@ export default async function Blog({ params }) {
           </p>
         </Suspense>
       </div>
-      <article className="prose">
-        <CustomMDX source={post.content} />
-      </article>
+      <article
+        className="prose"
+        dangerouslySetInnerHTML={{ __html: post.html }}
+      />
     </section>
   );
 }

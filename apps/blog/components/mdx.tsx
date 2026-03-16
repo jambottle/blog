@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import React from "react";
 import { highlight } from "sugar-high";
 
@@ -26,26 +23,34 @@ function Table({ data }) {
   );
 }
 
-function CustomLink(props) {
-  const href = props.href;
-
-  if (href.startsWith("/")) {
+function CustomLink({
+  href,
+  children,
+  ...props
+}: {
+  href?: string;
+  children?: React.ReactNode;
+}) {
+  if (!href || href.startsWith("/") || href.startsWith("#")) {
     return (
-      <Link href={href} {...props}>
-        {props.children}
-      </Link>
+      <a href={href} {...props}>
+        {children}
+      </a>
     );
   }
-
-  if (href.startsWith("#")) {
-    return <a {...props} />;
-  }
-
-  return <a target="_blank" rel="noopener noreferrer" {...props} />;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+      {children}
+    </a>
+  );
 }
 
-function RoundedImage(props) {
-  return <Image alt={props.alt} className="rounded-lg" {...props} />;
+function RoundedImage({
+  alt,
+  ...props
+}: React.ImgHTMLAttributes<HTMLImageElement>) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img alt={alt} className="rounded-lg" {...props} />;
 }
 
 function Code({ children, ...props }) {
@@ -53,20 +58,31 @@ function Code({ children, ...props }) {
   return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
 }
 
-function slugify(str) {
-  return str
-    .toString()
+function slugify(text: string): string {
+  return text
     .toLowerCase()
-    .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, "-") // Replace spaces with -
-    .replace(/&/g, "-and-") // Replace & with 'and'
-    .replace(/[^\w\-]+/g, "") // Remove all non-word characters except for -
-    .replace(/\-\-+/g, "-"); // Replace multiple - with single -
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .trim();
+}
+
+function extractText(children: React.ReactNode): string {
+  if (typeof children === "string") return children;
+  if (typeof children === "number") return String(children);
+  if (Array.isArray(children)) return children.map(extractText).join("");
+  if (children && typeof children === "object") {
+    const obj = children as unknown as Record<string, unknown>;
+    if ("props" in obj) {
+      const props = obj.props as { children?: React.ReactNode } | undefined;
+      return extractText(props?.children);
+    }
+  }
+  return "";
 }
 
 function createHeading(level) {
   const Heading = ({ children }) => {
-    const slug = slugify(children);
+    const slug = slugify(extractText(children));
     return React.createElement(
       `h${level}`,
       { id: slug },
@@ -86,24 +102,15 @@ function createHeading(level) {
   return Heading;
 }
 
-const components = {
+export const components = {
   h1: createHeading(1),
   h2: createHeading(2),
   h3: createHeading(3),
   h4: createHeading(4),
   h5: createHeading(5),
   h6: createHeading(6),
-  Image: RoundedImage,
+  img: RoundedImage,
   a: CustomLink,
   code: Code,
   Table,
 };
-
-export function CustomMDX(props) {
-  return (
-    <MDXRemote
-      {...props}
-      components={{ ...components, ...(props.components || {}) }}
-    />
-  );
-}

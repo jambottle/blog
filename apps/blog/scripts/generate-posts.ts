@@ -1,7 +1,12 @@
+import { evaluate } from "@mdx-js/mdx";
 import fs from "fs";
 import path from "path";
+import React from "react";
+import * as runtime from "react/jsx-runtime";
+import { renderToStaticMarkup } from "react-dom/server";
 
-import type { PostMetadata } from "@/lib/types";
+import { components } from "@/components/mdx";
+import type { Post, PostMetadata } from "@/lib/types";
 
 function parseFrontmatter(fileContent: string) {
   const frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
@@ -30,21 +35,39 @@ function readMDXFile(filePath: string) {
   return parseFrontmatter(rawContent);
 }
 
-function getMDXData(dir: string) {
-  const mdxFiles = getMDXFiles(dir);
-  return mdxFiles.map((file) => {
-    const { metadata, content } = readMDXFile(path.join(dir, file));
-    const slug = path.basename(file, path.extname(file));
-
-    return {
-      metadata,
-      slug,
-      content,
-    };
+async function renderMDXToHTML(content: string): Promise<string> {
+  const { default: Content } = await evaluate(content, {
+    ...(runtime as Parameters<typeof evaluate>[1]),
+    baseUrl: import.meta.url,
   });
+  return renderToStaticMarkup(
+    React.createElement(
+      Content as React.ComponentType<{ components: typeof components }>,
+      { components },
+    ),
+  );
 }
 
-fs.writeFileSync(
-  path.join(process.cwd(), "scripts", "posts.json"),
-  JSON.stringify(getMDXData(path.join(process.cwd(), "posts")), null, 2),
-);
+async function getMDXData(dir: string) {
+  const mdxFiles = getMDXFiles(dir);
+  return Promise.all(
+    mdxFiles.map(async (file) => {
+      const { metadata, content } = readMDXFile(path.join(dir, file));
+      const slug = path.basename(file, path.extname(file));
+      const html = await renderMDXToHTML(content);
+
+      return {
+        metadata,
+        slug,
+        html,
+      };
+    }),
+  );
+}
+
+getMDXData(path.join(process.cwd(), "posts")).then((posts: Post[]) => {
+  fs.writeFileSync(
+    path.join(process.cwd(), "scripts", "posts.json"),
+    JSON.stringify(posts, null, 2),
+  );
+});
