@@ -16,10 +16,10 @@
     "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "turbo": "2.11.7",
+    "turbo": "2.11.13",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@12.9.1",
+  "packageManager": "pnpm@12.21.0",
   "engines": {
     "node": "22.23.4"
   }
